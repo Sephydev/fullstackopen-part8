@@ -113,15 +113,17 @@ const typeDefs = `
       published: Int!
       genres: [String!]!
     ): Book!
+    editAuthor(
+      name: String!
+      setBornTo: Int!
+    ): Author
   }
 `;
 
 const resolvers = {
   Author: {
     bookCount: (root) => {
-      booksOfAuthor = books.filter(
-        (b) => b.author.toLowerCase() === root.name.toLowerCase()
-      );
+      booksOfAuthor = books.filter((b) => b.author === root.name);
       return booksOfAuthor.length;
     },
   },
@@ -132,14 +134,12 @@ const resolvers = {
       let filteredBooks = books;
 
       if (args.author) {
-        filteredBooks = books.filter(
-          (b) => b.author.toLowerCase() === args.author.toLowerCase()
-        );
+        filteredBooks = books.filter((b) => b.author === args.author);
       }
 
       if (args.genre) {
         filteredBooks = filteredBooks.filter((b) =>
-          b.genres.includes(args.genre.toLowerCase())
+          b.genres.includes(args.genre)
         );
       }
 
@@ -156,6 +156,17 @@ const resolvers = {
         authors = authors.concat(author);
       }
       return book;
+    },
+    editAuthor: (root, args) => {
+      let author = authors.find((a) => a.name === args.name);
+
+      if (!author) {
+        return null;
+      }
+
+      author = { ...author, born: args.setBornTo };
+      authors = authors.map((a) => (a.name === args.name ? author : a));
+      return author;
     },
   },
 };
