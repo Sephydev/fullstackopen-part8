@@ -151,20 +151,6 @@ const resolvers = {
       }
 
       return await Book.find({}).populate("author");
-
-      let filteredBooks = books;
-
-      if (args.author) {
-        filteredBooks = books.filter((b) => b.author === args.author);
-      }
-
-      if (args.genre) {
-        filteredBooks = filteredBooks.filter((b) =>
-          b.genres.includes(args.genre)
-        );
-      }
-
-      return filteredBooks;
     },
     allAuthors: async () => await Author.find({}),
   },
@@ -177,7 +163,7 @@ const resolvers = {
         try {
           author.save();
         } catch (error) {
-          throw new GraphQLError("Saving author failed", {
+          throw new GraphQLError("Saving author failed (name too short)", {
             extensions: {
               code: "BAD_USER_INPUT",
               invalidArgs: args.author,
@@ -195,7 +181,7 @@ const resolvers = {
       try {
         await book.save();
       } catch (error) {
-        throw new GraphQLError("Saving book failed", {
+        throw new GraphQLError("Saving book failed (title too short)", {
           extensions: {
             code: "BAD_USER_INPUT",
             invalidArgs: args.name,
