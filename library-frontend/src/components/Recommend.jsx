@@ -3,22 +3,18 @@ import { ME, ALL_BOOKS } from "../queries";
 
 const Recommend = ({ show }) => {
   const resultUser = useQuery(ME);
-  const resultBooks = useQuery(ALL_BOOKS);
+  const resultBooks = useQuery(ALL_BOOKS, {
+    variables: { genre: resultUser.data.me.favoriteGenre },
+  });
 
   if (!show) {
     return null;
   }
 
   let books = [];
-  let filteredBooks = [];
 
   if (resultUser.data && resultBooks.data) {
     books = resultBooks.data.allBooks;
-
-    filteredBooks = books.filter((b) =>
-      b.genres.includes(resultUser.data.me.favoriteGenre)
-    );
-    console.log(filteredBooks);
   }
 
   return (
@@ -32,7 +28,7 @@ const Recommend = ({ show }) => {
             <th>Author</th>
             <th>Published</th>
           </tr>
-          {filteredBooks.map((b) => (
+          {books.map((b) => (
             <tr key={b.title}>
               <td>{b.title}</td>
               <td>{b.author.name}</td>

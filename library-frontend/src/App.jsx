@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { useApolloClient } from "@apollo/client/react";
-import { useQuery } from "@apollo/client/react";
-import { ALL_BOOKS } from "./queries";
 
 import Authors from "./components/Authors";
 import Books from "./components/Books";

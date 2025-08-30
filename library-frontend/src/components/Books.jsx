@@ -4,8 +4,9 @@ import { ALL_BOOKS } from "../queries";
 
 const Books = (props) => {
   const [filter, setFilter] = useState(null);
-  const [filteredBooks, setFilteredBooks] = useState([]);
-  const result = useQuery(ALL_BOOKS);
+  const result = useQuery(ALL_BOOKS, {
+    variables: { genre: filter },
+  });
 
   if (!props.show) {
     return null;
@@ -23,12 +24,8 @@ const Books = (props) => {
   const handleFilter = (event) => {
     if (filter !== event.target.value) {
       setFilter(event.target.value);
-      setFilteredBooks(
-        books.filter((b) => b.genres.includes(event.target.value))
-      );
     } else {
       setFilter(null);
-      setFilteredBooks(books);
     }
   };
 
@@ -43,7 +40,7 @@ const Books = (props) => {
             <th>Author</th>
             <th>Published</th>
           </tr>
-          {filteredBooks.map((a) => (
+          {books.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
