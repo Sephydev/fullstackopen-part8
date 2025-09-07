@@ -1,24 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client/react";
 import { ALL_BOOKS } from "../queries";
 
 const Books = (props) => {
   const [filter, setFilter] = useState(null);
+  const [books, setBooks] = useState([]);
   const result = useQuery(ALL_BOOKS, {
     variables: { genre: filter },
   });
 
-  if (!props.show) {
-    return null;
-  }
-
-  let books = [];
   let genres = [];
 
-  if (result.data) {
-    books = result.data.allBooks;
-    const genresWithDuplicate = books.map((b) => b.genres);
-    genres = [...new Set(genresWithDuplicate.flat())];
+  const genresWithDuplicate = books.map((b) => b.genres);
+  genres = [...new Set(genresWithDuplicate.flat())];
+
+  useEffect(() => {
+    if (result.data) {
+      setBooks(result.data.allBooks);
+    }
+  }, [result.data]);
+
+  if (!props.show) {
+    return null;
   }
 
   const handleFilter = (event) => {

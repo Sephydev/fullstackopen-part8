@@ -10,7 +10,20 @@ const NewBook = (props) => {
   const [genres, setGenres] = useState([]);
 
   const [addBook] = useMutation(ADD_BOOK, {
-    refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_BOOKS }],
+    update: (cache, response) => {
+      const newBook = response.data.addBook;
+
+      cache.modify({
+        fields: {
+          allBooks(existingBooks = []) {
+            return [...existingBooks, newBook];
+          },
+          allAuthors(existingAuthors = []) {
+            return [...existingAuthors, newBook.author];
+          },
+        },
+      });
+    },
   });
 
   if (!props.show) {
