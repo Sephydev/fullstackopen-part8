@@ -11,6 +11,7 @@ const Recommend = ({ show }) => {
   });
 
   let books = [];
+
   useEffect(() => {
     if (resultUser.data) {
       setUserFavGenre(resultUser.data.me.favoriteGenre);
