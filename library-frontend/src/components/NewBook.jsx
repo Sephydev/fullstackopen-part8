@@ -9,22 +9,7 @@ const NewBook = (props) => {
   const [genre, setGenre] = useState("");
   const [genres, setGenres] = useState([]);
 
-  const [addBook] = useMutation(ADD_BOOK, {
-    update: (cache, response) => {
-      const newBook = response.data.addBook;
-
-      cache.modify({
-        fields: {
-          allBooks(existingBooks = []) {
-            return [...existingBooks, newBook];
-          },
-          allAuthors(existingAuthors = []) {
-            return [...existingAuthors, newBook.author];
-          },
-        },
-      });
-    },
-  });
+  const [addBook] = useMutation(ADD_BOOK);
 
   if (!props.show) {
     return null;

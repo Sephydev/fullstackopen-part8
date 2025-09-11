@@ -83,9 +83,9 @@ export const BOOK_ADDED = gql`
         born
         name
       }
-      genres
       published
       title
+      genres
     }
   }
 `;
