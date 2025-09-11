@@ -1,37 +1,9 @@
-import { useState } from "react";
-import { useQuery } from "@apollo/client/react";
-
-import { ALL_BOOKS } from "../queries";
-
 const Books = (props) => {
-  const [filter, setFilter] = useState(null);
-
-  const result = useQuery(ALL_BOOKS, {
-    variables: { genre: filter },
-    skip: !filter,
-  });
-
   if (!props.show) {
     return null;
   }
 
-  let books = [];
-
-  if (filter && !result.loading) {
-    books = result.data.allBooks;
-  } else {
-    books = props.books.allBooks;
-  }
-
   const genres = [...new Set(props.books.allBooks.map((b) => b.genres).flat())];
-
-  const handleFilter = (event) => {
-    if (filter !== event.target.value) {
-      setFilter(event.target.value);
-    } else {
-      setFilter(null);
-    }
-  };
 
   return (
     <div>
@@ -44,7 +16,7 @@ const Books = (props) => {
             <th>Author</th>
             <th>Published</th>
           </tr>
-          {books.map((a) => (
+          {props.books.allBooks.map((a) => (
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
@@ -54,7 +26,7 @@ const Books = (props) => {
         </tbody>
       </table>
       {genres.map((g) => (
-        <button key={g} value={g} onClick={handleFilter}>
+        <button key={g} value={g} onClick={props.handleFilter}>
           {g}
         </button>
       ))}

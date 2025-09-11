@@ -28,8 +28,7 @@ export const updateCache = (cache, query, addedBook) => {
         allBooks: [addedBook],
       };
     }
-    console.log("addedBook:", addedBook);
-    console.log("data:", data.allBooks);
+
     return {
       allBooks: uniqByName(data.allBooks.concat(addedBook)),
     };
@@ -39,17 +38,23 @@ export const updateCache = (cache, query, addedBook) => {
 const App = () => {
   const [page, setPage] = useState("authors");
   const [token, setToken] = useState(null);
+  const [filter, setFilter] = useState("");
 
-  const result = useQuery(ALL_BOOKS);
+  const allBooks = useQuery(ALL_BOOKS);
+  const filteredBooks = useQuery(ALL_BOOKS, {
+    variables: { genre: filter },
+    skip: filter === "",
+  });
 
   useSubscription(BOOK_ADDED, {
     onData: ({ data, client }) => {
       const addedBook = data.data.bookAdded;
       alert(`"${addedBook.title}" added`);
       updateCache(client.cache, { query: ALL_BOOKS }, addedBook);
-      console.log(
-        "CACHE AFTER UPDATE:",
-        client.cache.readQuery({ query: ALL_BOOKS })
+      updateCache(
+        client.cache,
+        { query: ALL_BOOKS, variables: { genre: filter } },
+        addedBook
       );
     },
   });
@@ -60,6 +65,14 @@ const App = () => {
     setToken(null);
     localStorage.clear();
     client.resetStore();
+  };
+
+  const handleFilter = (event) => {
+    if (filter !== event.target.value) {
+      setFilter(event.target.value);
+    } else {
+      setFilter("");
+    }
   };
 
   return (
@@ -81,7 +94,11 @@ const App = () => {
 
       <Authors show={page === "authors"} />
 
-      <Books show={page === "books" && result.data} books={result.data} />
+      <Books
+        show={page === "books" && allBooks.data}
+        handleFilter={handleFilter}
+        books={filteredBooks.data ? filteredBooks.data : allBooks.data}
+      />
 
       <Login show={page === "login"} setToken={setToken} setPage={setPage} />
 
